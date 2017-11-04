@@ -32,9 +32,17 @@ void setup() {
 void draw() {
   background(255, 0, 0);
   callLevel();
+  
+  if (state == 0){
+    displayMenu(); 
+  }
 
   drawGrid();
   displayChar();
+}
+
+void displayMenu(){
+   
 }
 
 void initializeValues(){
@@ -86,7 +94,7 @@ void drawGrid() {
 }
 
 void callLevel() {
-  if (state == 0) {
+  if (state == 1) {
     levelToLoad = "Level/1.txt";
     //print(levelToLoad);
     String lines[] = loadStrings(levelToLoad);
