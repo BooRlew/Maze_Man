@@ -16,6 +16,8 @@ char[][] tiles;
 PImage background;
 PImage button, buttonHovered;
 PImage wallpaper;
+PImage player, player1, player2, player3, character;
+PImage wall, portalEnter, portalExit, start, end;
 
 void setup() {
   size (800, 800);
@@ -32,14 +34,16 @@ void setup() {
 
 void draw() {
   background(255, 0, 0);
-  callLevel();
+  //callLevel();
 
   if (state == 0) {
     displayMenu();
+    callCharStart();
   }
-  if (state != 0) {
+  if (state != 0 && state != 1) {
     drawGrid();
-    //displayChar();
+    displayChar();
+    moveChar();
   }
 }
 
@@ -48,6 +52,19 @@ void loadImages() {
 
   button = loadImage("Image/StartButton.png");
   buttonHovered = loadImage("Image/StartButtonHovered.png");
+
+  player = loadImage("Image/Player.png");
+  player1 = loadImage("Image/Player1.png");
+  player2 = loadImage("Image/Player2.png");
+  player3 = loadImage("Image/Player3.png");
+
+  wall = loadImage("Image/Wall.png");
+
+  portalEnter = loadImage("Image/PortalOpen.png");
+  portalExit = loadImage("Image/PortalExit.png");
+
+  start = loadImage("Image/Start.png");
+  end = loadImage("Image/End.png");
 
   wallpaper = loadImage("Image/wallpaper.jpg");
 }
@@ -59,8 +76,8 @@ void displayMenu() {
   if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 200 && mouseY > height/2 + 100) {
     image(buttonHovered, width/2 - 125.5, height/2 + 100);
     if (mousePressed) {
-      callLevel();
-      state = 1;
+      //callCharStart();
+      state = 2;
     }
   } else {
     image(button, width/2 - 125.5, height/2 + 100);
@@ -83,49 +100,65 @@ void initializeValues() {
 }
 
 void displayChar() {
-  fill(0, 200);
-  ellipseMode(CORNER);
-  ellipse(charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
-  //if (keyPressed) {
-  //  if (key == 'w'|| key == 'W') {
-  //    charY --;
-  //  } else if (key == 's'|| key == 'S') {
-  //    charY ++;
-  //  } else if (key == 'a'|| key == 'A') {
-  //    charX --;
-  //  } else if (key == 'd'|| key == 'D') {
-  //    charX ++;
-  //  }
-  //}
+  //callCharStart();
+
+  character = player;
+  image(character, charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
+
+  //fill(0, 200);
+  //ellipseMode(CORNER);
+  //ellipse(charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
+}
+
+void moveChar() {
+  if (keyPressed) {
+    if (key == 'w'|| key == 'W') {
+      charY --;
+    } else if (key == 's'|| key == 'S') {
+      charY ++;
+    } else if (key == 'a'|| key == 'A') {
+      charX --;
+    } else if (key == 'd'|| key == 'D') {
+      charX ++;
+    }
+  }
 }
 
 void drawGrid() {
   image(wallpaper, 0, 0, width, height); 
 
+  loadLevel();
+
   //identify which box shows up as what
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {
       if (tiles[x][y] == '#') {
-        fill(0, 150);
+        //fill(0, 150);
+        image(wall, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'S') {
-        fill(0, 200, 0, 80);
+        //fill(0, 200, 0, 80);
+        image(start, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'E') {
-        fill(255, 0, 0, 80);
+        //fill(255, 0, 0, 80);
+        image(end, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'P') {
-        fill(255, 0, 255, 80);
+        //fill(255, 0, 255, 80);
+        image(portalEnter, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'O') {
-        fill(150, 0, 255, 80);
-      } else {
-        fill(255, 0);
-      }
-      rect(x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
+        //fill(150, 0, 255, 80);
+        image(portalExit, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
+      } 
+      //else {
+      //fill(255, 0);
+      //}
+      //rect(x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
     }
   }
   displayChar();
 }
 
-void callLevel() {
-  if (state == 1) {
+void callCharStart() {
+  if (state == 2) {
     levelToLoad = "Level/1.txt";
 
     //extracts the level data from text files
@@ -145,16 +178,17 @@ void callLevel() {
   }
 }
 
-void keyPressed() {
-  if (keyPressed) {
-    if (key == 'w'|| key == 'W') {
-      charY--;
-    } else if (key == 's'|| key == 'S') {
-      charY ++;
-    } else if (key == 'a'|| key == 'A') {
-      charX --;
-    } else if (key == 'd'|| key == 'D') {
-      charX ++;
+void loadLevel() {
+  if (state == 2) {
+    levelToLoad = "Level/1.txt";
+
+    //extracts the level data from text files
+    String lines[] = loadStrings(levelToLoad);
+    for (int y=0; y < gridDimension; y++) {
+      for (int x=0; x < gridDimension; x++) {
+        tileType = lines[y].charAt(x);
+        tiles[x][y] = tileType;
+      }
     }
   }
 }
