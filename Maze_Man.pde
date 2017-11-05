@@ -100,26 +100,48 @@ void initializeValues() {
 }
 
 void displayChar() {
-  //callCharStart();
-
-  character = player;
+  character = player1;
   image(character, charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
-
-  //fill(0, 200);
-  //ellipseMode(CORNER);
-  //ellipse(charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
 }
 
 void moveChar() {
   if (keyPressed) {
     if (key == 'w'|| key == 'W') {
       charY --;
+      for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+          if (tiles[charX][charY] == '#'){
+            charY ++;
+          }
+        }
+      }
     } else if (key == 's'|| key == 'S') {
       charY ++;
+      for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+          if (tiles[charX][charY] == '#'){
+            charY --;
+          }
+        }
+      }
     } else if (key == 'a'|| key == 'A') {
       charX --;
+      for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+          if (tiles[charX][charY] == '#'){
+            charX ++;
+          }
+        }
+      }
     } else if (key == 'd'|| key == 'D') {
       charX ++;
+      for (int x = 0; x < cols; x++) {
+        for (int y = 0; y < rows; y++) {
+          if (tiles[charX][charY] == '#'){
+            charX --;
+          }
+        }
+      }
     }
   }
 }
