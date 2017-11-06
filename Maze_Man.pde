@@ -18,12 +18,18 @@ PImage button, buttonHovered;
 PImage wallpaper;
 PImage player, player1, player2, player3, character;
 PImage wall, portalEnter, portalExit, start, end;
+boolean movingUp, movingDown, movingLeft, movingRight;
 
 void setup() {
   size (800, 800);
 
   noStroke();
   state = 0;
+  
+  movingUp = false;
+  movingDown = false;
+  movingLeft = false;
+  movingRight = false;
 
   initializeValues();
   loadImages();
@@ -100,50 +106,46 @@ void initializeValues() {
 }
 
 void displayChar() {
-  character = player1;
+  character = player;
   image(character, charX*boxWidth + gridXOffset, charY*boxHeight + gridYOffset, boxWidth, boxHeight);
 }
 
 void moveChar() {
-  if (keyPressed) {
-    if (key == 'w'|| key == 'W') {
-      charY --;
-      for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-          if (tiles[charX][charY] == '#'){
-            charY ++;
-          }
-        }
-      }
-    } else if (key == 's'|| key == 'S') {
-      charY ++;
-      for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-          if (tiles[charX][charY] == '#'){
-            charY --;
-          }
-        }
-      }
-    } else if (key == 'a'|| key == 'A') {
-      charX --;
-      for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-          if (tiles[charX][charY] == '#'){
-            charX ++;
-          }
-        }
-      }
-    } else if (key == 'd'|| key == 'D') {
-      charX ++;
-      for (int x = 0; x < cols; x++) {
-        for (int y = 0; y < rows; y++) {
-          if (tiles[charX][charY] == '#'){
-            charX --;
-          }
-        }
-      }
+    if (movingUp) {
+      charY--;
     }
-  }
+    
+    if (movingDown) {
+
+        charY ++;
+    }
+    if(keyPressed){
+    if (key == 'a'|| key == 'A') {
+
+      if (tiles[charX - 1][charY] == '#') {
+      } else {
+        charX --;
+      }
+      //print(charX + " | ");
+    }
+    
+    if (key == 'd'|| key == 'D') {
+
+      if (tiles[charX+1][charY] == '#') {
+      } else {
+        charX ++;
+      }
+      //print(charX + " | ");
+    }
+}
+}
+
+void moveUp(){
+        if (tiles[charX][charY-1] == '#') {
+      } else {
+        charY --;
+      }
+  
 }
 
 void drawGrid() {
@@ -212,5 +214,35 @@ void loadLevel() {
         tiles[x][y] = tileType;
       }
     }
+  }
+}
+
+void keyPressed() {
+  if (key == 'w' || key == 'W') {
+    movingUp = true;
+  }
+  if (key == 's' || key == 'S') {
+    movingDown = true;
+  }
+  if (key == 'd' || key == 'D') {
+    movingRight = true;
+  }
+  if (key == 'a' || key == 'A') {
+    movingLeft = true;
+  }
+}
+
+void keyReleased() {
+  if (key == 'w' || key == 'W') {
+    movingUp = false;
+  }
+  if (key == 's' || key == 'S') {
+    movingDown = false;
+  }
+  if (key == 'd' || key == 'D') {
+    movingRight = false;
+  }
+  if (key == 'a' || key == 'A') {
+    movingLeft = false;
   }
 }
