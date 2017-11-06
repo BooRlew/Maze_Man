@@ -25,7 +25,7 @@ void setup() {
 
   noStroke();
   state = 0;
-  
+
   movingUp = false;
   movingDown = false;
   movingLeft = false;
@@ -111,42 +111,26 @@ void displayChar() {
 }
 
 void moveChar() {
-    if (movingUp) {
-      charY--;
-    }
-    
-    if (movingDown) {
+  if (movingUp && tiles[charX][charY - 1] != '#') {
+    charY--;
+  }
 
-        charY ++;
-    }
-    if(keyPressed){
-    if (key == 'a'|| key == 'A') {
+  if (movingDown && tiles[charX][charY + 1] != '#') {
+    charY ++;
+  }
+  if (movingLeft  && tiles[charX - 1][charY] != '#') {
 
-      if (tiles[charX - 1][charY] == '#') {
-      } else {
-        charX --;
-      }
-      //print(charX + " | ");
-    }
-    
-    if (key == 'd'|| key == 'D') {
+    charX --;
+    //print(charX + " | ");
+  }
 
-      if (tiles[charX+1][charY] == '#') {
-      } else {
-        charX ++;
-      }
-      //print(charX + " | ");
-    }
-}
+  if (movingRight  && tiles[charX + 1][charY] != '#') {
+
+    charX ++;
+    //print(charX + " | ");
+  }
 }
 
-void moveUp(){
-        if (tiles[charX][charY-1] == '#') {
-      } else {
-        charY --;
-      }
-  
-}
 
 void drawGrid() {
   image(wallpaper, 0, 0, width, height); 
