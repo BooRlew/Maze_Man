@@ -1,5 +1,5 @@
 //Made by Richard
-//Need to make character move .-.
+//Need to make Character select screen
 
 
 
@@ -46,7 +46,9 @@ void draw() {
     displayMenu();
     callCharStart();
   }
-  if (state != 0 && state != 1) {
+  if (state == 2) {
+  }
+  if (state >= 3) {
     drawGrid();
     displayChar();
     moveChar();
@@ -77,16 +79,39 @@ void loadImages() {
 
 void displayMenu() {
   image(background, 0, 0, width, height);
+  fill(0);
 
-  //Display Start Button
-  if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 200 && mouseY > height/2 + 100) {
-    image(buttonHovered, width/2 - 125.5, height/2 + 100);
+  //Display Buttons
+  
+  //Start Button
+  if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 125 && mouseY > height/2 + 25) {
+    image(buttonHovered, width/2 - 125.5, height/2 + 25);
+    rect(width/2, height/2 + 250, 250, 100);
+    cursor(HAND);
     if (mousePressed) {
       //callCharStart();
-      state = 2;
+      cursor(ARROW);
+      state = 3;
     }
-  } else {
-    image(button, width/2 - 125.5, height/2 + 100);
+  }
+  
+  //Character Select Button
+  else if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 300 && mouseY > height/2 + 200) {
+    image(button, width/2 - 125.5, height/2 + 25);
+    cursor(HAND);
+
+    fill(50);
+    rect(width/2, height/2 + 250, 250, 100);
+    if (mousePressed) {
+      //callCharStart();
+      cursor(ARROW);
+      state = 2;
+    } else {
+      image(button, width/2 - 125.5, height/2 + 25);
+      rectMode(CENTER);
+      rect(width/2, height/2 + 250, 250, 100);
+      cursor(ARROW);
+    }
   }
 }
 
@@ -114,22 +139,17 @@ void moveChar() {
   if (movingUp && tiles[charX][charY - 1] != '#') {
     charY--;
   }
-
   if (movingDown && tiles[charX][charY + 1] != '#') {
     charY ++;
   }
   if (movingLeft  && tiles[charX - 1][charY] != '#') {
-
     charX --;
-    //print(charX + " | ");
   }
-
   if (movingRight  && tiles[charX + 1][charY] != '#') {
-
     charX ++;
-    //print(charX + " | ");
   }
 }
+
 
 
 void drawGrid() {
@@ -141,32 +161,23 @@ void drawGrid() {
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {
       if (tiles[x][y] == '#') {
-        //fill(0, 150);
         image(wall, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'S') {
-        //fill(0, 200, 0, 80);
         image(start, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'E') {
-        //fill(255, 0, 0, 80);
         image(end, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'P') {
-        //fill(255, 0, 255, 80);
         image(portalEnter, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } else if (tiles[x][y] == 'O') {
-        //fill(150, 0, 255, 80);
         image(portalExit, x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
       } 
-      //else {
-      //fill(255, 0);
-      //}
-      //rect(x*boxWidth + gridXOffset, y*boxHeight + gridYOffset, boxWidth, boxHeight);
     }
   }
   displayChar();
 }
 
 void callCharStart() {
-  if (state == 2) {
+  if (state == 3) {
     levelToLoad = "Level/1.txt";
 
     //extracts the level data from text files
@@ -187,13 +198,15 @@ void callCharStart() {
 }
 
 void loadLevel() {
-  if (state == 2) {
+  if (state == 3) {
     levelToLoad = "Level/1.txt";
 
     //extracts the level data from text files
     String lines[] = loadStrings(levelToLoad);
     for (int y=0; y < gridDimension; y++) {
       for (int x=0; x < gridDimension; x++) {
+        
+        //Designates each cell as a block
         tileType = lines[y].charAt(x);
         tiles[x][y] = tileType;
       }
