@@ -8,6 +8,9 @@ int cols, rows;
 int gridDimension;
 int charX, charY;
 int waitTime, lastMoveTime;
+int[][] grid;
+int pX, pY, oX, oY;
+//pX and pY are the XY co-ords for entrance protal. They are named because of the name in the text file. Same for oX and oY.
 
 float boxWidth, boxHeight;
 float gridXOffset, gridYOffset;
@@ -42,7 +45,7 @@ void setup() {
   character = player;
 
   //declare Array
-  int [][] grid = new int[cols][rows];
+  grid = new int[cols][rows];
 }
 
 void draw() {
@@ -51,12 +54,13 @@ void draw() {
 
   if (state == 1) {
     displayMenu();
-    callCharStart();
+    loadDiferentTiles();
   }
   if (state == 2) {
     characterSelect();
   }
   if (state >= 3) {
+    detectWin();
     drawGrid();
     displayChar();
     moveChar();
@@ -89,13 +93,20 @@ void displayMenu() {
   image(background, 0, 0, width, height);
   //fill(0);
 
+  //Change cursor based on if over a button
+  if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 300 && mouseY > height/2 + 200 || mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 125 && mouseY > height/2 + 25) {
+    cursor(HAND);
+  } else {
+    cursor(ARROW);
+  }
+
   //Display Buttons
 
   //Start Button
   if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 125 && mouseY > height/2 + 25) {
     image(buttonHovered, width/2 - 125.5, height/2 + 25);
     rect(width/2, height/2 + 250, 250, 100);
-    cursor(HAND);
+    //cursor(HAND);
 
     if (mousePressed) {
       //callCharStart();
@@ -104,12 +115,12 @@ void displayMenu() {
     }
   } else {
     image(button, width/2 - 125.5, height/2 + 25);
-    cursor(ARROW);
+    //cursor(ARROW);
   }
 
   //Character Select Button
   if (mouseX > width/2 - 125.5 && mouseX < width/2 + 125.5 && mouseY < height/2 + 300 && mouseY > height/2 + 200) {
-    cursor(HAND);
+    //cursor(HAND);
 
     fill(0, 200, 0);
     rect(width/2, height/2 + 250, 250, 100);
@@ -122,7 +133,7 @@ void displayMenu() {
     fill(0, 255, 0);
     rectMode(CENTER);
     rect(width/2, height/2 + 250, 250, 100);
-    cursor(ARROW);
+    //cursor(ARROW);
   }
 }
 
@@ -204,7 +215,7 @@ void initializeValues() {
 
   tiles = new char[cols][rows];
 
-  waitTime = 200;
+  waitTime = 125;
 }
 
 void displayChar() {
@@ -222,14 +233,26 @@ void moveChar() {
       charY ++;
       lastMoveTime = millis();
     }
-    if (movingLeft  && tiles[charX - 1][charY] != '#' && charX >= 0) {
-      charX --;
-      lastMoveTime = millis();
+    if (charX >= 1) {
+      if (movingLeft  && tiles[charX - 1][charY] != '#') {
+        charX --;
+        lastMoveTime = millis();
+      }
     }
-    if (movingRight  && tiles[charX + 1][charY] != '#') {
-      charX ++;
-      lastMoveTime = millis();
+    if (charX <= 23) {
+      if (movingRight  && tiles[charX + 1][charY] != '#') {
+        charX ++;
+        lastMoveTime = millis();
+      }
     }
+  }
+}
+
+void detectWin() {
+  if (tiles[charX][charY] ==  'E') {
+    state++; 
+    loadDiferentTiles();
+    loadLevel();
   }
 }
 
@@ -259,40 +282,58 @@ void drawGrid() {
   displayChar();
 }
 
-void callCharStart() {
+void loadDiferentTiles() {
   if (state == 3) {
+    levelToLoad = "Level/1.txt";
+  } else if (state == 4) {
     levelToLoad = "Level/2.txt";
+  } else{
+    levelToLoad = "Level/blank.txt";
+  }
 
-    //extracts the level data from text files
-    String lines[] = loadStrings(levelToLoad);
-    for (int y=0; y < gridDimension; y++) {
-      for (int x=0; x < gridDimension; x++) {
-        tileType = lines[y].charAt(x);
-        tiles[x][y] = tileType;
+  //extracts the level data from text files
+  String lines[] = loadStrings(levelToLoad);
+  for (int y=0; y < gridDimension; y++) {
+    for (int x=0; x < gridDimension; x++) {
+      tileType = lines[y].charAt(x);
+      tiles[x][y] = tileType;
 
-        //Finds the starting point
-        if (tileType == 'S') {
-          charX = x; 
-          charY = y;
-        }
+      //Finds the starting point
+      if (tileType == 'S') {
+        charX = x; 
+        charY = y;
+      }
+      if (tileType == 'P') {
+        pX = x; 
+        pY = y;
+      }
+      if (tileType == 'O') {
+        oX = x; 
+        oY = y;
       }
     }
   }
 }
 
+
+
 void loadLevel() {
   if (state == 3) {
+    levelToLoad = "Level/1.txt";
+  } else if (state == 4) {
     levelToLoad = "Level/2.txt";
+  } else{
+    levelToLoad = "Level/blank.txt";
+  }
 
-    //extracts the level data from text files
-    String lines[] = loadStrings(levelToLoad);
-    for (int y=0; y < gridDimension; y++) {
-      for (int x=0; x < gridDimension; x++) {
+  //extracts the level data from text files
+  String lines[] = loadStrings(levelToLoad);
+  for (int y=0; y < gridDimension; y++) {
+    for (int x=0; x < gridDimension; x++) {
 
-        //Designates each cell as a block
-        tileType = lines[y].charAt(x);
-        tiles[x][y] = tileType;
-      }
+      //Designates each cell as a block
+      tileType = lines[y].charAt(x);
+      tiles[x][y] = tileType;
     }
   }
 }
