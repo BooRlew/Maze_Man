@@ -1,5 +1,6 @@
 //Made by Richard
-//Need to make Character select screen
+//It is far to difficult to make levels so I oonly made 2.
+//Need to replace any green with actual art
 
 
 
@@ -33,7 +34,7 @@ void setup() {
   size (800, 800);
 
   noStroke();
-  state = 1;
+  state = 5;
 
   movingUp = false;
   movingDown = false;
@@ -59,7 +60,9 @@ void draw() {
   if (state == 2) {
     characterSelect();
   }
-  if (state >= 3) {
+  if (state == 5) {
+    displayEnd();
+  } else if (state >= 3) {
     detectWin();
     drawGrid();
     displayChar();
@@ -87,6 +90,13 @@ void loadImages() {
   end = loadImage("Image/End.png");
 
   wallpaper = loadImage("Image/wallpaper.jpg");
+}
+
+void displayEnd() {
+  background(0, 255, 0);
+  fill(0, 200, 0);
+  text("YOU WIN", 100, 100);
+  homeButton();
 }
 
 void displayMenu() {
@@ -227,21 +237,37 @@ void moveChar() {
   if (millis() > lastMoveTime + waitTime) {
     if (movingUp && tiles[charX][charY - 1] != '#') {
       charY--;
+      if (charX == pX && charY == pY ) {
+        charX = oX;
+        charY = oY;
+      }
       lastMoveTime = millis();
     }
     if (movingDown && tiles[charX][charY + 1] != '#') {
       charY ++;
+      if (charX == pX && charY == pY ) {
+        charX = oX;
+        charY = oY;
+      }
       lastMoveTime = millis();
     }
     if (charX >= 1) {
       if (movingLeft  && tiles[charX - 1][charY] != '#') {
         charX --;
+        if (charX == pX && charY == pY ) {
+          charX = oX;
+          charY = oY;
+        }
         lastMoveTime = millis();
       }
     }
     if (charX <= 23) {
       if (movingRight  && tiles[charX + 1][charY] != '#') {
         charX ++;
+        if (charX == pX && charY == pY ) {
+          charX = oX;
+          charY = oY;
+        }
         lastMoveTime = millis();
       }
     }
@@ -287,7 +313,7 @@ void loadDiferentTiles() {
     levelToLoad = "Level/1.txt";
   } else if (state == 4) {
     levelToLoad = "Level/2.txt";
-  } else{
+  } else {
     levelToLoad = "Level/blank.txt";
   }
 
@@ -322,7 +348,7 @@ void loadLevel() {
     levelToLoad = "Level/1.txt";
   } else if (state == 4) {
     levelToLoad = "Level/2.txt";
-  } else{
+  } else {
     levelToLoad = "Level/blank.txt";
   }
 
